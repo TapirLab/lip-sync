@@ -1,0 +1,3 @@
+Mouth shapes are taken from:
+https://github.com/morevnaproject-org/papagayo-ng
+Detailed information can be found on the repository.
