@@ -15,8 +15,8 @@ pydub
 %% Lip-Sync
 %% -------------------
 %% $Author: Halil Said Cankurtaran$,
-%% $Date: October 1st, 2020$,
-%% $Revision: 1.0$
+%% $Date: December 11th, 2020$,
+%% $Revision: 1.1$
 %% Tapir Lab.
 %% Copyright: Halil Said Cankurtaran, Tapir Lab.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,6 +31,15 @@ from pydub.utils import make_chunks
 
 
 def report_to_frames(path_to_report_file):
+    """Process produced report file to decide corresponding frame mouth shape
+    of each frame and saves to `sample_output` as `frame_shapes.txt`
+
+    Parameters
+    ----------
+    path_to_report_file : string
+        path to produced report file
+    """
+
     sample_output = os.path.join("." + os.sep, "sample_output" + os.sep)
     output_file = "frame_shapes.txt"
 
@@ -73,6 +82,23 @@ def report_to_frames(path_to_report_file):
 
 
 def frame_number2img(frame_no, frames_dict, mouth_images):
+    """Find corresponding image of frame based representative values if frame
+    does not exist in dictionary, return "silence" mouth shape.
+    
+    Parameters
+    ----------
+    frame_no : int
+        Corresponding frame number
+    frames_dict : dictionary
+        A dictionary of frames and corresponding representative values
+    mouth_images :
+        list of mouth images. The index corresponds to representative value
+    
+    Returns:
+    -------
+    mouth_images : numpy.ndarray
+        image of mouth shape
+    """
     if frame_no in frames_dict:
         i = frames_dict[frame_no]
         if i == 20:  # Not matched with ant vowels

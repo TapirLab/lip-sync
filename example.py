@@ -15,8 +15,8 @@ os
 %% Lip-Sync
 %% -------------------
 %% $Author: Halil Said Cankurtaran$,
-%% $Date: October 2nd, 2020$,
-%% $Revision: 1.0$
+%% $Date: December 11th, 2020$,
+%% $Revision: 1.1$
 %% Tapir Lab.
 %% Copyright: Halil Said Cankurtaran, Tapir Lab.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,7 +50,7 @@ for vowel in vowels:
     # Process the signal and detect where the voice activity is
     average_phoneme_duration = 0.06  # An experimental value
     # Optimum threshold is detected with -12dB constant noise figure,
-    # In case of need, "adaptive" version can be used to calculate opt. thresh.
+    # In case of need, the "adaptive" version can be used to calculate opt. thresh.
     noise_figure = "constant"
     # Detects where the activity is and shows the graph for visual inspection
     # show_graph can be set to False if graph is not required
@@ -58,7 +58,7 @@ for vowel in vowels:
                                         sampling_frequency,
                                         average_phoneme_duration,
                                         noise_figure,
-                                        show_graph=True,
+                                        show_graph=False,
                                         )
 
     # Calculate parameters of train data
@@ -71,21 +71,21 @@ for vowel in vowels:
     # Formants will be used in the matching, no need to save for each now
     np.save(sample_output+vowel, [mean_ffreqs, normalization_vector])
 
-# Match test data with trained vowels and save report as a txt file
+# Match test data with trained vowels and save the report as a txt file
 
 average_phoneme_duration = 0.025  # An experimental value
 # Optimum threshold is detected adaptively for test recording
 noise_figure = "adaptive"
-# FPS is specified to detect the frame number of mouth shape.
+# FPS is specified to detect the frame number of mouth shapes.
 # Report file will include frame numbers and corresponding mouth shape
 # However, reports.txt will be processed again in order to fix frame repetition
 FPS = 10
 
-# Voice acitivity detection and parameter extaction is performed in function
+# Voice activity detection and parameter extraction is performed in function
 # For the sake of explanation they were performed 1by1 in parameter_extraction
-# Since statistical parameters of each vowel is calculated and saved before,
-# Only list of vowels are given as parameter.
-# For the detailed structure of report.txt, docstring should be read.
+# Since the statistical parameters of each vowel is calculated and saved before,
+# Only a list of vowels is given as a parameter.
+# For the detailed structure of report.txt, the docstring should be read.
 report, length = compare_and_match(test_sound,
                                    vowels,
                                    average_phoneme_duration,

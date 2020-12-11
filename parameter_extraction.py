@@ -23,7 +23,7 @@ Main Functions
             1D_array is the recording of voice.
             Subsegments are constructed in VAD.
 
-    Rest of the functions are called inside these three main functions.
+    The rest of the functions are called inside these three main functions.
 
 Dependencies
 ------------
@@ -39,31 +39,26 @@ math
 %% Lip-Sync
 %% -------------------
 %% $Author: Halil Said Cankurtaran$,
-%% $Date: October 2nd, 2020$,
-%% $Revision: 1.0$
+%% $Date: December 11th, 2020$,
+%% $Revision: 1.1$
 %% Tapir Lab.
 %% Copyright: Halil Said Cankurtaran, Tapir Lab.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 """
-
-# import argparse
-# import os
+from math import ceil, floor, log
 import soundfile
 
 import numpy as np
 import scipy.io as sio
 import scipy.signal as signal  # lfilter, firwin
 import matplotlib.pyplot as plt
-
-from math import ceil, floor, log
-
 # %% Auxiliary functions
 
 
 def load_sound(filename):
     """Load recorded .wav file.
 
-    Requires `soundfile` package to read record.
+    Requires `soundfile` package to read a record.
 
     Parameters
     ----------
@@ -93,7 +88,7 @@ def load_sound(filename):
 def load_mat_file(filename):
     """Use to load previously recorded .mat files.
 
-    Requires `scipy.io` package to read record. `scipy.io` imported as sio
+    Requires `scipy.io` package to read a record. `scipy.io` imported as sio
     Actually, ``scipy.io.loadmat(filename)`` loads the recorded file
     Additionally, read file parsed into previously named variables.
 
@@ -105,9 +100,10 @@ def load_mat_file(filename):
     Returns
     -------
     x_t : numpy.ndarray, dtype('float64')
-        One-dimensional array of sound recording
+        A one-dimensional array of sound recording
     sampling_frequency : int
-        Sampling frequency of recording which is always 44100 Hz in study
+        The sampling frequency of recording, which is always 44100 Hz in
+        the study
     number_of_audio_channels : int
         mono or stereo
     number_of_bits : int
@@ -167,18 +163,19 @@ def removeDC(r_t):
 
 
 def lpFilter(x_t, sampling_frequency, cutoff, ntaps):
-    """Filter given (x_t) signal with specified FIR low-pass filet.
+    """Filter given (x_t) signal with specified FIR low-pass filter.
 
     Requires `scipy.signal` package. `scipy.signal` imported as signal
 
     Parameters
     ----------
     x_t : numpy.ndarray, dtype('float64')
-        One-dimensional array of sound recording
+        A one-dimensional array of sound recording
     sampling_frequency : int
-        Sampling frequency of recording which is always 44100 Hz in study
+        The sampling frequency of recording, which is always 44100 Hz in
+        the study
     cutoff : int
-        Cutoff frequency of filter
+        The cutoff frequency of the filter
     ntaps : int
         Number of taps
 
@@ -220,7 +217,7 @@ def avgEnergy(x_t_reshaped, scale="log"):
     x_t_reshaped : numpy.ndarray, dtype('float64')
         This array is divided into equal chunks by given calculation
     scale : str, optional
-        Logarithmic or linear calculation of energy of chunks
+        Logarithmic or linear calculation of the energy of chunks
         It is logarithmic by default
 
     Returns
@@ -253,7 +250,7 @@ def optimumThreshold(r_t, option):
 
     Returns
     -------
-    noise_figure : int
+    noise_figure : float
     """
     avg_bin_energy_in_dB = avgEnergy(r_t, "log")
     avg_bin_energy = avgEnergy(r_t, "linear")
@@ -273,7 +270,7 @@ def optimumThreshold(r_t, option):
 
 
 def autocorrbyfft(x_t, order=-2, mod="normalized"):
-    """Calculate autocorraletaion via multiplication in frequency domain.
+    """Calculate autocorreletaion via multiplication in frequency domain.
 
     Autocorrelation array will be sample averaged and normalized by default.
     However, if normalization is not required, a None type can be given.
@@ -283,27 +280,27 @@ def autocorrbyfft(x_t, order=-2, mod="normalized"):
     x_t : numpy.ndarray, dtype('float64')
         Signal to autocorrelate
     order : integer, optional
-        Order is required to provide a adequate but shorter array
-        If order is not specified, function returns complete array
+        Order is required to provide an adequate but shorter array
+        If the order is not specified, the function returns a complete array
     mod : str, optional
         A normalized autocorrelation array is needed in LPC calculation
-        If dont need to normalize, pass None as parameter
+        If don't need to normalize, pass None as a parameter
 
     Returns
     -------
-    R_t : numpy.ndarray, dtype('float64')
-        Autocorralation array of signal.
-        If order is specified len(R_t) == order+1!
+    R : numpy.ndarray, dtype('float64')
+      Autocorrelation array of signal.
+      If order is specified len(R) == order+1!
     """
     length_of_signal = len(x_t)  # get length of signal to calculate fft size
     fft_size = nextPow2(2*length_of_signal-1)  # calculate fft size
 
     # Transform signal to frequency domain
-    X_t = np.fft.fft(x_t, 2**fft_size)
+    X = np.fft.rfft(x_t, 2**fft_size)
     # Calculate autocorrelation and transform signal to time domain
-    # Signal is real, thus keep only real part
-    R = np.real(np.fft.ifft(abs(X_t)**2))
-    R = R / len(x_t)  # Sample average of autocorralation array
+    # Acoustic signals are real, thus use (rfft and irfft)
+    R = np.fft.irfft(abs(X)**2)
+    R = R / len(x_t)  # Sample average of autocorrelation array
 
     if mod == "normalized":  # If normalized. It is default
         R = R / R[0]  # Normalize
@@ -318,6 +315,10 @@ def activityMask(x_t, chunk_size, noise_figure):
     ----------
     x_t : numpy.ndarray, dtype('float64')
         Signal to detect activity
+    chunk_size : int
+        length of chunk
+    noise_figure : str
+        the way of calculation of noise figure, adaptive or constant
 
     Returns
     -------
@@ -348,8 +349,8 @@ def construct_segments(activity_mask_flattened):
 
     Parameters
     ----------
-        activity_mask_flattened : numpy.ndarray, dtype("np.int8")
-            array of 1s and 0s which shows where the activity is
+    activity_mask_flattened : numpy.ndarray, dtype("np.int8")
+        array of 1s and 0s which shows where the activity is
 
     Returns
     -------
@@ -385,11 +386,11 @@ def construct_subsegments(segments, sampling_frequency,
     Parameters
     ----------
     segments : numpy.ndarray, dtype("int64")
-        An array of beginning and end points of segments
+        An array of beginning and endpoints of segments
     sampling_frequency : int
-        Sampling frequency of recorded signal
+        The sampling frequency of the recorded signal
     average_phoneme_duration : float, optional
-        The length of average phoneme duration in seconds.
+        The length of the average phoneme duration in seconds.
 
     Returns
     -------
@@ -520,12 +521,13 @@ def VAD(x_t, sampling_frequency, avg_phn_dr, noise_fig, show_graph=False):
 
 
 def lpc(r, n):
-    """Calculate Linear Predictive Coefficients with autocorrelation method.
+    """Calculate Linear Predictive Coding Coefficients with autocorrelation
+    method.
 
     Parameters
     ----------
     r : numpy.ndarray, dtype('float64')
-        Autocorralation array of signal
+        Autocorrelation array of signal
     n : int
         Filter order
 

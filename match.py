@@ -2,7 +2,7 @@
 """Python implementation of Tapir Lab.'s Acoustic Lip Synchronization.
 
 This program matches the vowels in the given file with previously trained ones.
-If there is no match, report includes a large number that is specified as 20
+If there is no match, the report includes a large number that is specified as 20
 initially.
 
 Main Functions
@@ -13,13 +13,13 @@ Main Functions
                           avg_phoneme_duration,
                           noise_figure,
                           fps):
-            Sound_file is test data. Will be used to match with trained vowels
-            Rest of the parameters explained in the docstring of function
+            Sound_file is test data. Will be used to matching with trained vowels
+            The rest of the parameters explained in the docstring of the function
     Load Parameters:
         load_parameters(vowel)
-            vowel is the name of the file which includes repetitions of a
+            the vowel is the name of the file which includes repetitions of a
             specified vowel to use in the match stage.
-            It should contain mean of fundemantal frequencies and
+            It should contain the mean of fundamental frequencies and
             vowel_formant_deviation_error_normalization_vector which is
             explained in the article.
 
@@ -34,27 +34,27 @@ os
 %% Lip-Sync
 %% -------------------
 %% $Author: Halil Said Cankurtaran$,
-%% $Date: October 2nd, 2020$,
-%% $Revision: 1.0$
+%% $Date: December 11th, 2020$,
+%% $Revision: 1.1$
 %% Tapir Lab.
 %% Copyright: Halil Said Cankurtaran, Tapir Lab.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 """
 
 import os
-import parameter_extraction as pe
 import numpy as np
+import parameter_extraction as pe
 
 
 def load_parameters(vowel):
     """Use to load previously recorded parameters.
 
-    It is assumed that parameters are saved into vowels folder
+    It is assumed that parameters are saved into the sample_output folder
 
     Parameters
     ----------
     vowel : str
-        vowel to load e.g. 'a', 'e' etc
+        vowel to load e.g. 'a', 'e' etc.
 
     Returns
     -------
@@ -96,14 +96,14 @@ def compare_and_match(sound_file,
     Parameters
     ----------
     sound_file : str
-        Name of sound file in match folder
+        Name of the sound file in the sample_input folder
     trained_vowels : list of strings
-        List of vowels in reports directory
+        List of vowels in the sample_ouput directory
     avg_phoneme_duration : float
         Average phoneme duration in seconds. Empirically it is set to 0.025
     noise_figure : str
         This parameter must be given as 'adaptive' or 'constant'
-        If constant, function returns -12. This is an emprical value
+        If constant, function returns -12. This is an empirical value
     FPS : int
         frames per seconds to decide frame number of vowel
 
@@ -117,6 +117,8 @@ def compare_and_match(sound_file,
             report[3] -> end of subsegment in seconds
             report[4] -> detected vowel in subsegment
             report[5] -> frame number in a video with specified fps
+    length : float
+        length of original sound file in seconds
     """
     # Load sound_file to detect vowels
     directory = os.path.join('.', 'sample_input' + os.sep)
@@ -135,7 +137,7 @@ def compare_and_match(sound_file,
                                         sampling_frequency,
                                         avg_phoneme_duration,
                                         noise_figure,
-                                        True,
+                                        False,
                                         )
 
     # Calculate formants
